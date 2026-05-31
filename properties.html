@@ -658,7 +658,9 @@ const urlId = new URLSearchParams(window.location.search).get('id');
 if (urlId && props[urlId]) showDetail(urlId);
 window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
 window.addEventListener('load', function() {
-  formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });
+  setTimeout(function() {
+    formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });
+  }, 500);
 });
 </script>
 

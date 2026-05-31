@@ -163,17 +163,19 @@
       <p class="form-sub">Preencha os dados abaixo e entraremos em contacto.</p>
 
       <div id="sell-form">
+        <input type="hidden" name="_subject" id="sell-subject" value="">
+
         <div class="form-section-label">Os seus dados</div>
-        <div class="field"><label>Nome completo *</label><input type="text" id="f-name" placeholder="Nome Apelido"></div>
+        <div class="field"><label>Nome completo *</label><input type="text" name="Nome" id="f-name" placeholder="Nome Apelido"></div>
         <div class="field-row">
-          <div class="field"><label>Telefone *</label><input type="tel" id="f-tel" placeholder="9XX XXX XXX"></div>
-          <div class="field"><label>Email</label><input type="email" id="f-email" placeholder="email@exemplo.pt"></div>
+          <div class="field"><label>Telefone *</label><input type="tel" name="Telefone" id="f-tel" placeholder="9XX XXX XXX"></div>
+          <div class="field"><label>Email</label><input type="email" name="Email" id="f-email" placeholder="email@exemplo.pt"></div>
         </div>
 
         <div class="form-section-label">Sobre o imóvel</div>
         <div class="field">
           <label>Tipo de imóvel *</label>
-          <select id="f-type">
+          <select name="Tipo de Imóvel" id="f-type">
             <option value="">Selecionar...</option>
             <option>Moradia</option>
             <option>Apartamento</option>
@@ -182,21 +184,21 @@
           </select>
         </div>
         <div class="field-row">
-          <div class="field"><label>Tipologia</label><input type="text" id="f-tipologia" placeholder="T2, T3..."></div>
-          <div class="field"><label>Área (m²)</label><input type="number" id="f-area" placeholder="120"></div>
+          <div class="field"><label>Tipologia</label><input type="text" name="Tipologia" id="f-tipologia" placeholder="T2, T3..."></div>
+          <div class="field"><label>Área (m²)</label><input type="number" name="Área (m²)" id="f-area" placeholder="120"></div>
         </div>
-        <div class="field"><label>Localização *</label><input type="text" id="f-loc" placeholder="Cidade / Freguesia"></div>
-        <div class="field"><label>Preço pretendido (€)</label><input type="text" id="f-price" placeholder="ex: 250 000"></div>
+        <div class="field"><label>Localização *</label><input type="text" name="Localização" id="f-loc" placeholder="Cidade / Freguesia"></div>
+        <div class="field"><label>Preço pretendido (€)</label><input type="text" name="Preço Pretendido" id="f-price" placeholder="ex: 250 000"></div>
 
         <div class="form-section-label">Estado</div>
-        <div class="checkbox-row"><input type="checkbox" id="s-nova"> <label for="s-nova">Construção nova</label></div>
-        <div class="checkbox-row"><input type="checkbox" id="s-renov"> <label for="s-renov">Renovado</label></div>
-        <div class="checkbox-row"><input type="checkbox" id="s-usado"> <label for="s-usado">Usado / para recuperar</label></div>
+        <div class="checkbox-row"><input type="checkbox" name="Estado" value="Construção nova" id="s-nova"> <label for="s-nova">Construção nova</label></div>
+        <div class="checkbox-row"><input type="checkbox" name="Estado" value="Renovado" id="s-renov"> <label for="s-renov">Renovado</label></div>
+        <div class="checkbox-row"><input type="checkbox" name="Estado" value="Usado / para recuperar" id="s-usado"> <label for="s-usado">Usado / para recuperar</label></div>
 
         <div class="form-section-label">Informação adicional</div>
-        <div class="field"><textarea id="f-notes" placeholder="Descrição, características especiais, urgência de venda..."></textarea></div>
+        <div class="field"><textarea name="Notas" id="f-notes" placeholder="Descrição, características especiais, urgência de venda..."></textarea></div>
 
-        <button class="submit-btn" onclick="submitSell()">Enviar informação</button>
+        <button class="submit-btn" onclick="submitSell(event)">Enviar informação</button>
       </div>
 
       <div class="success-banner" id="sell-success">
@@ -208,14 +210,28 @@
 </main>
 
 <script>
-function submitSell() {
+async function submitSell(e) {
+  e.preventDefault();
   const name = document.getElementById('f-name').value.trim();
-  const tel = document.getElementById('f-tel').value.trim();
+  const tel  = document.getElementById('f-tel').value.trim();
   const type = document.getElementById('f-type').value;
-  const loc = document.getElementById('f-loc').value.trim();
+  const loc  = document.getElementById('f-loc').value.trim();
   if (!name || !tel || !type || !loc) { alert('Por favor preencha os campos obrigatórios (*)'); return; }
-  document.getElementById('sell-form').style.display = 'none';
-  document.getElementById('sell-success').style.display = 'block';
+
+  document.getElementById('sell-subject').value = `Venda — ${type} — ${name}`;
+
+  const form = document.getElementById('sell-form');
+  const data = new FormData(form);
+
+  try {
+    const res = await fetch('https://formspree.io/f/xnjryyvk', {
+      method: 'POST', body: data, headers: { Accept: 'application/json' }
+    });
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('sell-success').style.display = 'block';
+    } else { alert('Erro ao enviar. Por favor tente novamente.'); }
+  } catch { alert('Erro de ligação. Por favor tente novamente.'); }
 }
 </script>
 </body>

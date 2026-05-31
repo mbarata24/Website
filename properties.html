@@ -166,6 +166,30 @@
 
   .success-msg { display: none; background: var(--olive-pale); color: var(--olive-dark); padding: 1rem; border-radius: 2px; font-size: 13px; text-align: center; margin-top: 0.5rem; }
 
+  /* HIGHLIGHT PHOTOS */
+  .highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
+  .highlight-img { aspect-ratio: 4/3; background: var(--olive-pale); border-radius: 2px; overflow: hidden; cursor: pointer; }
+  .highlight-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+  .highlight-img:hover img { transform: scale(1.04); }
+  .highlight-img .ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--olive-light); }
+
+  /* CAROUSEL */
+  .carousel-card { background: white; border: 1px solid var(--beige); border-radius: 2px; overflow: hidden; margin-bottom: 1.5rem; }
+  .carousel-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--olive-dark); padding: 1.2rem 1.5rem 0; }
+  .carousel-wrap { position: relative; }
+  .carousel-track-outer { overflow: hidden; }
+  .carousel-track { display: flex; transition: transform 0.35s ease; }
+  .carousel-slide { min-width: 100%; aspect-ratio: 16/9; background: var(--olive-pale); flex-shrink: 0; }
+  .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+  .carousel-slide .ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--olive-light); }
+  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: 1px solid var(--beige); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 2; transition: background 0.2s; }
+  .carousel-btn:hover { background: white; }
+  .carousel-btn.prev { left: 10px; }
+  .carousel-btn.next { right: 10px; }
+  .carousel-dots { display: flex; justify-content: center; gap: 6px; padding: 0.8rem; }
+  .carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--beige); border: none; cursor: pointer; padding: 0; transition: background 0.2s; }
+  .carousel-dot.active { background: var(--olive); }
+
   @media (max-width: 900px) {
     :root { --sidebar-w: 0px; }
     .sidebar { display: none; }
@@ -399,21 +423,41 @@
           <h3>Características</h3>
           <table class="specs-table" id="detail-specs-table"></table>
         </div>
+
+        <!-- HIGHLIGHT PHOTOS (3 thumbnails) -->
+        <div class="highlights-grid" id="detail-highlights"></div>
+
         <div class="detail-specs-card" id="detail-eq-card">
           <h3>Equipamentos</h3>
           <div class="eq-grid" id="detail-eq-grid"></div>
+        </div>
+
+        <!-- PHOTO CAROUSEL -->
+        <div class="carousel-card" id="detail-carousel-card">
+          <h3>Galeria</h3>
+          <div class="carousel-wrap">
+            <div class="carousel-track-outer">
+              <div class="carousel-track" id="carousel-track"></div>
+            </div>
+            <button class="carousel-btn prev" onclick="carouselMove(-1)">&#8249;</button>
+            <button class="carousel-btn next" onclick="carouselMove(1)">&#8250;</button>
+          </div>
+          <div class="carousel-dots" id="carousel-dots"></div>
         </div>
       </div>
 
       <div class="detail-sidebar">
         <div class="contact-card">
           <h3>Agendar visita</h3>
-          <div class="contact-form">
-            <input type="text" placeholder="Nome" id="cf-name">
-            <input type="tel" placeholder="Telefone" id="cf-tel">
-            <input type="email" placeholder="Email" id="cf-email">
-            <textarea placeholder="Mensagem (opcional)"></textarea>
-            <button onclick="submitContact()">Enviar pedido</button>
+          <div class="contact-form" id="visit-form">
+            <!-- hidden fields sent to Formspree but not shown to user -->
+            <input type="hidden" id="cf-property" name="Empreendimento" value="">
+            <input type="hidden" name="_subject" id="cf-subject" value="">
+            <input type="text"  name="Nome"      placeholder="Nome"     id="cf-name">
+            <input type="tel"   name="Telefone"  placeholder="Telefone" id="cf-tel">
+            <input type="email" name="Email"     placeholder="Email"    id="cf-email">
+            <textarea           name="Mensagem"  placeholder="Mensagem (opcional)"></textarea>
+            <button onclick="submitVisit(event)">Enviar pedido</button>
           </div>
           <div class="success-msg" id="success-msg">✓ Pedido enviado! Entraremos em contacto brevemente.</div>
           <div class="contact-direct">
@@ -442,7 +486,26 @@ const props = {
       ['Área Total', '115 m²'], ['Área do Terreno', '90 m²'], ['Área de Implantação', '70 m²'],
       ['Número de Pisos', '2 + terraço'], ['Tipologia', 'T2+1'], ['Classe Energética', 'A']
     ],
-    eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares', 'VMC']
+    eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares', 'VMC'],
+    // ─── FOTOS ───────────────────────────────────────────────────────────────
+    // highlights: 3 fotos de destaque — substituir pelos caminhos reais das imagens
+    // ex: 'images/casa1/sala.jpg'
+    highlights: [
+      { src: '', label: 'Sala' },
+      { src: '', label: 'Cozinha' },
+      { src: '', label: 'Quarto' },
+    ],
+    // gallery: todas as fotos do carrossel — adicionar ou remover entradas livremente
+    // para adicionar: { src: 'images/casa1/foto4.jpg', caption: 'Jardim' }
+    // para remover: apagar a linha correspondente
+    gallery: [
+      { src: '', caption: 'Exterior' },
+      { src: '', caption: 'Sala' },
+      { src: '', caption: 'Cozinha' },
+      { src: '', caption: 'Quarto Principal' },
+      { src: '', caption: 'Casa de Banho' },
+    ],
+    // ─────────────────────────────────────────────────────────────────────────
   },
   casa2: {
     name: 'Casa 2', type: '2 Moradias T4', loc: 'Loc 2', fase: 'construcao', faseLabel: 'Em Construção',
@@ -451,25 +514,42 @@ const props = {
       ['Área por Moradia', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
       ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
     ],
-    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)']
+    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
+    highlights: [
+      { src: '', label: 'Exterior' },
+      { src: '', label: 'Interior' },
+      { src: '', label: 'Jardim' },
+    ],
+    gallery: [
+      { src: '', caption: 'Exterior' },
+      { src: '', caption: 'Sala' },
+      { src: '', caption: 'Cozinha' },
+      { src: '', caption: 'Quarto' },
+    ],
   },
   casa3: {
     name: 'Casa 3', type: '10 Moradias T4', loc: 'Loc 3', fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T4'], ['Número de Unidades', '10']],
-    eq: []
+    eq: [],
+    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+    gallery: [{ src: '', caption: 'Render Exterior' }, { src: '', caption: 'Implantação' }],
   },
   casa4: {
     name: 'Casa 4', type: 'Moradia Bifamiliar 2T0', loc: 'Loc 4', fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T0 × 2'], ['Tipo', 'Bifamiliar']],
-    eq: []
+    eq: [],
+    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+    gallery: [{ src: '', caption: 'Render Exterior' }],
   },
   casa5: {
     name: 'Casa 5', type: '6 Apartamentos T2/T3', loc: 'Loc 5', fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T2 / T3'], ['Número de Frações', '6']],
-    eq: []
+    eq: [],
+    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+    gallery: [{ src: '', caption: 'Render Exterior' }],
   }
 };
 
@@ -496,6 +576,33 @@ function showDetail(id) {
     eqCard.style.display = 'block';
   } else { eqCard.style.display = 'none'; }
 
+  // HIGHLIGHTS
+  const hlEl = document.getElementById('detail-highlights');
+  hlEl.innerHTML = p.highlights.map(h =>
+    `<div class="highlight-img">` +
+    (h.src ? `<img src="${h.src}" alt="${h.label}">` : `<div class="ph">${h.label}</div>`) +
+    `</div>`
+  ).join('');
+
+  // CAROUSEL
+  const track = document.getElementById('carousel-track');
+  const dots  = document.getElementById('carousel-dots');
+  const carouselCard = document.getElementById('detail-carousel-card');
+  carouselCurrent = 0;
+  carouselTotal = p.gallery.length;
+  if (carouselTotal > 0) {
+    track.innerHTML = p.gallery.map(g =>
+      `<div class="carousel-slide">` +
+      (g.src ? `<img src="${g.src}" alt="${g.caption}">` : `<div class="ph">${g.caption}</div>`) +
+      `</div>`
+    ).join('');
+    dots.innerHTML = p.gallery.map((_, i) =>
+      `<button class="carousel-dot ${i===0?'active':''}" onclick="carouselGoTo(${i})"></button>`
+    ).join('');
+    track.style.transform = 'translateX(0)';
+    carouselCard.style.display = 'block';
+  } else { carouselCard.style.display = 'none'; }
+
   const others = document.getElementById('other-props-list');
   others.innerHTML = Object.entries(props).filter(([k]) => k !== id).map(([k, o]) =>
     `<div class="mini-prop" onclick="showDetail('${k}')">
@@ -505,6 +612,8 @@ function showDetail(id) {
   ).join('');
 
   document.getElementById('success-msg').style.display = 'none';
+  document.getElementById('visit-form').style.display = 'flex';
+  document.getElementById('cf-property').value = p.name;
   document.getElementById('cf-name').value = '';
   document.getElementById('cf-tel').value = '';
   document.getElementById('cf-email').value = '';
@@ -528,11 +637,42 @@ function filterProps(fase, btn) {
   });
 }
 
-function submitContact() {
-  const n = document.getElementById('cf-name').value.trim();
-  const t = document.getElementById('cf-tel').value.trim();
-  if (!n || !t) { alert('Por favor preencha o nome e telefone.'); return; }
-  document.getElementById('success-msg').style.display = 'block';
+async function submitVisit(e) {
+  e.preventDefault();
+  const name = document.getElementById('cf-name').value.trim();
+  const tel  = document.getElementById('cf-tel').value.trim();
+  if (!name || !tel) { alert('Por favor preencha o nome e telefone.'); return; }
+
+  // Set subject: "Visita — Casa X — Nome"
+  const prop = document.getElementById('cf-property').value;
+  document.getElementById('cf-subject').value = `Visita — ${prop} — ${name}`;
+
+  const form = document.getElementById('visit-form');
+  const data = new FormData(form);
+
+  try {
+    const res = await fetch('https://formspree.io/f/xnjryyvk', {
+      method: 'POST', body: data, headers: { Accept: 'application/json' }
+    });
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    } else { alert('Erro ao enviar. Por favor tente novamente.'); }
+  } catch { alert('Erro de ligação. Por favor tente novamente.'); }
+}
+
+// Carousel state
+let carouselCurrent = 0;
+let carouselTotal = 0;
+
+function carouselGoTo(i) {
+  carouselCurrent = i;
+  document.getElementById('carousel-track').style.transform = `translateX(-${i * 100}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+
+function carouselMove(dir) {
+  carouselGoTo((carouselCurrent + dir + carouselTotal) % carouselTotal);
 }
 
 // Handle ?id= from landing page

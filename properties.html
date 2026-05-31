@@ -477,6 +477,8 @@
 
 </main>
 
+<script src="https://unpkg.com/@formspree/ajax@1"> </script>
+
 <script>
 const props = {
   casa1: {
@@ -621,8 +623,7 @@ function showDetail(id) {
   document.getElementById('list-view').style.display = 'none';
   document.getElementById('detail-view').style.display = 'block';
   window.scrollTo(0, 0);
-  window.formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });
-}
+  formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });}
 
 function showList() {
   document.getElementById('detail-view').style.display = 'none';
@@ -658,8 +659,6 @@ const urlId = new URLSearchParams(window.location.search).get('id');
 if (urlId && props[urlId]) showDetail(urlId);
 window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
 </script>
-<script 
-src="https://unpkg.com/@formspree/ajax@1" defer>
-</script>
+
 </body>
 </html>

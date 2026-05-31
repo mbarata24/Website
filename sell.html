@@ -162,7 +162,7 @@
       <h3>Submeter imóvel</h3>
       <p class="form-sub">Preencha os dados abaixo e entraremos em contacto.</p>
 
-      <form id="sell-form" onsubmit="return false">
+      <form id="sell-form" action="https://formspree.io/f/xnjryyvk" method="POST">
         <input type="hidden" name="_subject" id="sell-subject" value="">
 
         <div class="form-section-label">Os seus dados</div>
@@ -198,7 +198,7 @@
         <div class="form-section-label">Informação adicional</div>
         <div class="field"><textarea name="Notas" id="f-notes" placeholder="Descrição, características especiais, urgência de venda..."></textarea></div>
 
-        <button type="button" class="submit-btn" onclick="submitSell(event)">Enviar informação</button>
+        <button type="submit" class="submit-btn">Enviar informação</button>
       </form>
 
       <div class="success-banner" id="sell-success">
@@ -210,29 +210,7 @@
 </main>
 
 <script>
-async function submitSell(e) {
-  e.preventDefault();
-  const name = document.getElementById('f-name').value.trim();
-  const tel  = document.getElementById('f-tel').value.trim();
-  const type = document.getElementById('f-type').value;
-  const loc  = document.getElementById('f-loc').value.trim();
-  if (!name || !tel || !type || !loc) { alert('Por favor preencha os campos obrigatórios (*)'); return; }
-
-  document.getElementById('sell-subject').value = `Venda — ${type} — ${name}`;
-
-  const form = document.getElementById('sell-form');
-  const data = new FormData(form);
-
-  try {
-    const res = await fetch('https://formspree.io/f/xnjryyvk', {
-      method: 'POST', body: data, headers: { Accept: 'application/json' }
-    });
-    if (res.ok) {
-      form.style.display = 'none';
-      document.getElementById('sell-success').style.display = 'block';
-    } else { alert('Erro ao enviar. Por favor tente novamente.'); }
-  } catch { alert('Erro de ligação. Por favor tente novamente.'); }
-}
 </script>
+
 </body>
 </html>

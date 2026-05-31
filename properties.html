@@ -449,7 +449,7 @@
       <div class="detail-sidebar">
         <div class="contact-card">
           <h3>Agendar visita</h3>
-          <form class="contact-form" id="visit-form">
+          <form class="contact-form" id="visit-form" action="https://formspree.io/f/xnjryyvk" method="POST">
             <!-- hidden fields sent to Formspree but not shown to user -->
             <input type="hidden" id="cf-property" name="Empreendimento" value="">
             <input type="hidden" name="_subject" id="cf-subject" value="">
@@ -457,7 +457,7 @@
             <input type="tel"   name="Telefone"  placeholder="Telefone" id="cf-tel">
             <input type="email" name="Email"     placeholder="Email"    id="cf-email">
             <textarea           name="Mensagem"  placeholder="Mensagem (opcional)"></textarea>
-            <button type="button" onclick="submitVisit(event)">Enviar pedido</button>
+            <button type="submit">Enviar pedido</button>
           </form>
           <div class="success-msg" id="success-msg">✓ Pedido enviado! Entraremos em contacto brevemente.</div>
           <div class="contact-direct">
@@ -637,29 +637,6 @@ function filterProps(fase, btn) {
   });
 }
 
-async function submitVisit(e) {
-  e.preventDefault();
-  const name = document.getElementById('cf-name').value.trim();
-  const tel  = document.getElementById('cf-tel').value.trim();
-  if (!name || !tel) { alert('Por favor preencha o nome e telefone.'); return; }
-
-  // Set subject: "Visita — Casa X — Nome"
-  const prop = document.getElementById('cf-property').value;
-  document.getElementById('cf-subject').value = `Visita — ${prop} — ${name}`;
-
-  const form = document.getElementById('visit-form');
-  const data = new FormData(form);
-
-  try {
-    const res = await fetch('https://formspree.io/f/xnjryyvk', {
-      method: 'POST', body: data, headers: { Accept: 'application/json' }
-    });
-    if (res.ok) {
-      form.style.display = 'none';
-      document.getElementById('success-msg').style.display = 'block';
-    } else { alert('Erro ao enviar. Por favor tente novamente.'); }
-  } catch { alert('Erro de ligação. Por favor tente novamente.'); }
-}
 
 // Carousel state
 let carouselCurrent = 0;

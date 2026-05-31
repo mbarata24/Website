@@ -43,6 +43,7 @@
   .prop-row-img img { width: 100%; height: 100%; object-fit: cover; }
   .prop-row-img .img-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 4rem; color: var(--olive-light); font-weight: 300; }
   .prop-fase { position: absolute; top: 12px; left: 12px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+  .fase-vendida { background: rgba(139, 0, 0, 0.9); color: var(--beige-light); }
   .fase-concluida { background: var(--olive-dark); color: var(--beige-light); }
   .fase-construcao { background: var(--beige-dark); color: white; }
   .fase-projeto { background: rgba(255,255,255,0.9); color: var(--olive-dark); border: 1px solid var(--beige); }
@@ -174,17 +175,17 @@
     <div class="filter-bar">
       <span class="filter-label">Distrito:</span>
       <button class="filter-btn active" onclick="filterProps('todos', this)">Todos</button>
-      <button class="filter-btn" onclick="filterProps('distrito1', this)">Distrito 1</button>
-      <button class="filter-btn" onclick="filterProps('distrito2', this)">Distrito 2</button>
+      <button class="filter-btn" onclick="filterProps('Lisboa', this)">Lisboa</button>
+      <button class="filter-btn" onclick="filterProps('Setúbal', this)">Setúbal</button>
     </div>
 
     <div class="property-list" id="prop-list">
 
       <!-- data-distrito determina o filtro. Manter data-fase apenas para a badge visual -->
-      <div class="prop-row" data-distrito="distrito1" onclick="showDetail('casa1')">
+      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa1')">
         <div class="prop-row-img">
           <span class="img-placeholder">C1</span>
-          <span class="prop-fase fase-concluida">Concluída</span>
+          <span class="prop-fase fase-vendida">Vendida</span>
         </div>
         <div class="prop-row-body">
           <div class="prop-row-top">
@@ -212,7 +213,7 @@
         </div>
       </div>
 
-      <div class="prop-row" data-distrito="distrito1" onclick="showDetail('casa2')">
+      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa2')">
         <div class="prop-row-img">
           <span class="img-placeholder">C2</span>
           <span class="prop-fase fase-construcao">Em Construção</span>
@@ -243,7 +244,7 @@
         </div>
       </div>
 
-      <div class="prop-row" data-distrito="distrito2" onclick="showDetail('casa3')">
+      <div class="prop-row" data-distrito="Setúbal" onclick="showDetail('casa3')">
         <div class="prop-row-img">
           <span class="img-placeholder">C3</span>
           <span class="prop-fase fase-projeto">Projeto</span>
@@ -267,7 +268,7 @@
         </div>
       </div>
 
-      <div class="prop-row" data-distrito="distrito2" onclick="showDetail('casa4')">
+      <div class="prop-row" data-distrito="Setúbal" onclick="showDetail('casa4')">
         <div class="prop-row-img">
           <span class="img-placeholder">C4</span>
           <span class="prop-fase fase-projeto">Projeto</span>
@@ -291,7 +292,7 @@
         </div>
       </div>
 
-      <div class="prop-row" data-distrito="distrito2" onclick="showDetail('casa5')">
+      <div class="prop-row" data-distrito="Setúbal" onclick="showDetail('casa5')">
         <div class="prop-row-img">
           <span class="img-placeholder">C5</span>
           <span class="prop-fase fase-projeto">Projeto</span>
@@ -403,30 +404,30 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // DADOS DAS CASAS
 // Para cada casa: editar loc (Concelho, Freguesia), distrito, specs, etc.
-// distrito: 'distrito1' ou 'distrito2' — deve corresponder ao botão do filtro
+// distrito: 'Lisboa' ou 'Setúbal' — deve corresponder ao botão do filtro
 // Para adicionar um novo distrito: ver comentário na filter-bar acima
 // ═══════════════════════════════════════════════════════════════════════════
 const props = {
   casa1: {
-    name: 'Casa 1', type: '1 Moradia T2+1',
-    loc: 'Concelho X, Freguesia Y',   // <- editar aqui
-    distrito: 'distrito1',             // <- editar aqui
-    fase: 'concluida', faseLabel: 'Concluída',
+    name: 'Pirescoxe', type: '1 Moradia T2+1',
+    loc: 'Loures, Santa Iria da Azóia',   // <- editar aqui
+    distrito: 'Lisboa',             // <- editar aqui
+    fase: 'vendida', faseLabel: 'Vendida',
     price: '415 k€', priceNote: '',
     specs: [
       ['Área Total', '115 m²'], ['Área do Terreno', '90 m²'], ['Área de Implantação', '70 m²'],
-      ['Número de Pisos', '2 + terraço'], ['Tipologia', 'T2+1'], ['Classe Energética', 'A']
+      ['Número de Pisos', '2 + Terraço'], ['Tipologia', 'T2 + 1'], ['Classe Energética', 'A']
     ],
     eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares', 'VMC'],
     highlights: [{ src: '', label: 'Sala' }, { src: '', label: 'Cozinha' }, { src: '', label: 'Quarto' }],
     gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto Principal' }, { src: '', caption: 'Casa de Banho' }],
   },
   casa2: {
-    name: 'Casa 2', type: '2 Moradias T4',
-    loc: 'Concelho X, Freguesia Z',
-    distrito: 'distrito1',
+    name: 'Zambujal A', type: 'Moradia T4',
+    loc: 'Mafra, Zambujal',
+    distrito: 'Lisboa',
     fase: 'construcao', faseLabel: 'Em Construção',
-    price: '750 k€', priceNote: 'a partir de / por moradia',
+    price: '750 k€', priceNote: 'a partir de',
     specs: [
       ['Área por Moradia', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
       ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
@@ -436,9 +437,23 @@ const props = {
     gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
   },
   casa3: {
-    name: 'Casa 3', type: '10 Moradias T4',
-    loc: 'Concelho W, Freguesia A',
-    distrito: 'distrito2',
+    name: 'Zambujal B', type: 'Moradia T4',
+    loc: 'Mafra, Zambujal',
+    distrito: 'Lisboa',
+    fase: 'construcao', faseLabel: 'Em Construção',
+    price: '750 k€', priceNote: 'a partir de',
+    specs: [
+      ['Área por Moradia', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
+      ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
+    ],
+    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
+    highlights: [{ src: '', label: 'Exterior' }, { src: '', label: 'Interior' }, { src: '', label: 'Jardim' }],
+    gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
+  },
+  casa4: {
+    name: 'Castelinhos', type: '10 Moradias T4',
+    loc: 'Sintra, A-dos-Francos',
+    distrito: 'Lisboa',
     fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T4'], ['Número de Unidades', '10']],
@@ -446,10 +461,10 @@ const props = {
     highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
     gallery: [{ src: '', caption: 'Render Exterior' }, { src: '', caption: 'Implantação' }],
   },
-  casa4: {
-    name: 'Casa 4', type: 'Moradia Bifamiliar 2T0',
+  casa5: {
+    name: 'Casa 5', type: 'Moradia Bifamiliar 2T0',
     loc: 'Concelho W, Freguesia B',
-    distrito: 'distrito2',
+    distrito: 'Setúbal',
     fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T0 × 2'], ['Tipo', 'Bifamiliar']],
@@ -457,10 +472,10 @@ const props = {
     highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
     gallery: [{ src: '', caption: 'Render Exterior' }],
   },
-  casa5: {
-    name: 'Casa 5', type: '6 Apartamentos T2/T3',
+  casa6: {
+    name: 'Casa 6', type: '6 Apartamentos T2/T3',
     loc: 'Concelho W, Freguesia C',
-    distrito: 'distrito2',
+    distrito: 'Setúbal',
     fase: 'projeto', faseLabel: 'Projeto',
     price: '—', priceNote: 'Preço a definir',
     specs: [['Tipologia', 'T2 / T3'], ['Número de Frações', '6']],

@@ -385,14 +385,64 @@
   /* LOCATION GROUP */
   .location-group { margin-bottom: 3.5rem; }
 
-  @media (max-width: 900px) {
-    :root { --sidebar-w: 0px; }
-    .sidebar { display: none; }
+  
     .hero { padding: 3rem 2rem 2.5rem; }
     .content { padding: 2rem; }
     .stats-bar { flex-wrap: wrap; }
     .stat-item { min-width: 50%; }
     .sell-banner { flex-direction: column; padding: 2rem; gap: 1.5rem; }
+  }
+  /* ── MOBILE NAV (bottom tab bar) ───────────────────────────── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--olive-dark);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .mobile-nav-inner {
+    display: flex;
+    justify-content: space-around;
+  }
+  .mobile-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 4px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .mobile-nav a svg { width: 20px; height: 20px; }
+  .mobile-nav a.active, .mobile-nav a:hover { color: var(--beige); }
+
+  @media (max-width: 768px) {
+    :root { --sidebar-w: 0px; }
+    .sidebar { display: none; }
+    .mobile-nav { display: block; }
+    .main { padding-bottom: 64px; }
+  }
+
+
+  @media (max-width: 768px) {
+    .hero { padding: 2rem 1.5rem 2rem; }
+    .hero h1 { font-size: 2.2rem; }
+    .hero-sub { font-size: 14px; }
+    .hero-ctas { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { min-width: 50%; border-bottom: 1px solid var(--beige); }
+    .content { padding: 1.5rem; }
+    .property-grid { grid-template-columns: 1fr; }
+    .sell-banner { flex-direction: column; padding: 2rem 1.5rem; gap: 1.5rem; }
+    .sell-banner-text h2 { font-size: 1.5rem; }
+    .section-header { flex-wrap: wrap; gap: 0.5rem; }
   }
 </style>
 </head>
@@ -694,5 +744,25 @@
 
   </div>
 </main>
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      Início
+    </a>
+    <a href="properties.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Casas
+    </a>
+    <a href="sell.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Vender
+    </a>
+    <a href="about.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      Empresa
+    </a>
+  </div>
+</nav>
 </body>
 </html>

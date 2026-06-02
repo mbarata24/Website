@@ -39,6 +39,7 @@
       color: var(--text-dark);
       display: flex;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .sidebar {
@@ -625,6 +626,7 @@
     .specs-table td:last-child {
       font-weight: 500;
       color: var(--text-dark);
+      word-break: break-word;
     }
 
     .eq-grid {
@@ -648,6 +650,7 @@
       content: '✓';
       color: var(--olive);
       font-size: 12px;
+      flex-shrink: 0;
     }
 
     .detail-sidebar {}
@@ -1124,6 +1127,36 @@
         padding: 1.5rem;
         grid-template-columns: 1fr;
         gap: 1.5rem;
+        overflow-x: hidden;
+      }
+
+      .detail-specs-card {
+        padding: 1.2rem;
+        overflow-x: hidden;
+      }
+
+      .specs-table {
+        table-layout: fixed;
+        word-break: break-word;
+      }
+
+      .eq-chip {
+        font-size: 12px;
+        padding: 5px 10px;
+        max-width: 100%;
+        word-break: break-word;
+      }
+
+      .eq-grid {
+        max-width: 100%;
+      }
+
+      .prop-row-body {
+        padding: 1.2rem;
+      }
+
+      .equipamentos {
+        max-width: 100%;
       }
 
       .highlights-grid {

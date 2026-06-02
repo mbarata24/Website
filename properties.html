@@ -1,293 +1,1389 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Empreendimentos — Empresa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --olive: #4a5c2f; --olive-dark: #2e3a1c; --olive-mid: #6b7c47;
-    --olive-light: #c8d4a8; --olive-pale: #eef2e6;
-    --beige: #d6c9b0; --beige-light: #f5f0e8; --beige-dark: #b5a48a;
-    --cream: #faf8f3; --text-dark: #1e2410; --text-mid: #4a4a3a; --text-muted: #8a8870;
-    --sidebar-w: 220px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); display: flex; min-height: 100vh; }
-  .sidebar { width: var(--sidebar-w); background: var(--olive-dark); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; padding: 2.5rem 0; z-index: 100; }
-  .sidebar-logo { padding: 0 1.8rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; }
-  .sidebar-logo .logo-badge { width: 48px; height: 48px; background: var(--beige); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--olive-dark); margin-bottom: 0.8rem; }
-  .sidebar-logo .company-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--beige-light); letter-spacing: 0.08em; line-height: 1.4; font-weight: 300; }
-  .nav-links { flex: 1; }
-  .nav-link { display: block; padding: 0.75rem 1.8rem; color: rgba(255,255,255,0.55); text-decoration: none; font-size: 13px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; transition: all 0.2s; border-left: 2px solid transparent; }
-  .nav-link:hover, .nav-link.active { color: var(--beige); border-left-color: var(--beige); background: rgba(255,255,255,0.05); }
-  .nav-link.active { font-weight: 500; }
-  .sidebar-contact { padding: 1.5rem 1.8rem 0; border-top: 1px solid rgba(255,255,255,0.1); }
-  .sidebar-contact p { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
-  .sidebar-contact a { display: block; font-size: 12px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 0.3rem; }
-  .main { margin-left: var(--sidebar-w); flex: 1; }
-  #list-view { display: block; }
-  .list-header { background: var(--olive); padding: 3.5rem 4rem 3rem; }
-  .list-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: var(--beige-light); margin-bottom: 0.5rem; }
-  .list-header p { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 300; }
-  .filter-bar { background: var(--beige-light); border-bottom: 1px solid var(--beige); padding: 1rem 4rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-  .filter-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-right: 0.5rem; }
-  .filter-btn { background: white; border: 1px solid var(--beige); color: var(--text-mid); font-size: 12px; padding: 6px 14px; border-radius: 2px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-  .filter-btn:hover, .filter-btn.active { background: var(--olive); color: white; border-color: var(--olive); }
-  .property-list { padding: 3rem 4rem; display: flex; flex-direction: column; gap: 2rem; }
-  .prop-row { background: white; border: 1px solid var(--beige); border-radius: 2px; display: grid; grid-template-columns: 280px 1fr; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; text-decoration: none; color: inherit; }
-  .prop-row:hover { box-shadow: 0 6px 28px rgba(74,92,47,0.1); transform: translateY(-2px); }
-  .prop-row-img { height: 220px; background: var(--olive-pale); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .prop-row-img img { width: 100%; height: 100%; object-fit: cover; }
-  .prop-row-img .img-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 4rem; color: var(--olive-light); font-weight: 300; }
-  .prop-fase { position: absolute; top: 12px; left: 12px; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
-  .fase-vendida { background: rgba(139, 0, 0, 0.9); color: var(--beige-light); }
-  .fase-vendida { background: #8b2020; color: white; }
-  .fase-concluida { background: var(--olive-dark); color: var(--beige-light); }
-  .fase-construcao { background: var(--beige-dark); color: white; }
-  .fase-projeto { background: rgba(255,255,255,0.9); color: var(--olive-dark); border: 1px solid var(--beige); }
-  .prop-row-body { padding: 1.8rem 2rem; display: flex; flex-direction: column; justify-content: space-between; }
-  .prop-row-loc { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--olive-mid); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 5px; }
-  .prop-row-loc svg { width: 11px; height: 11px; }
-  .prop-row-name { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 400; color: var(--olive-dark); margin-bottom: 0.3rem; }
-  .prop-row-type { font-size: 13px; color: var(--text-muted); font-weight: 300; margin-bottom: 1.2rem; }
-  .prop-specs-grid { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
-  .spec-item .val { font-size: 15px; font-weight: 500; color: var(--text-dark); display: block; }
-  .spec-item .lbl { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; display: block; margin-top: 1px; }
-  .prop-row-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--beige-light); }
-  .prop-price { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--olive-dark); }
-  .prop-price small { font-size: 0.75rem; font-weight: 300; color: var(--text-muted); display: block; font-family: 'DM Sans', sans-serif; }
-  .btn-details { background: var(--olive); color: white; border: none; padding: 0.6rem 1.4rem; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; font-family: 'DM Sans', sans-serif; border-radius: 2px; transition: background 0.2s; }
-  .btn-details:hover { background: var(--olive-dark); }
-  .equipamentos { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .eq-tag { background: var(--olive-pale); color: var(--olive); font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 400; }
-  #detail-view { display: none; }
-  .detail-back { background: var(--beige-light); border-bottom: 1px solid var(--beige); padding: 1rem 4rem; display: flex; align-items: center; gap: 1.5rem; }
-  .back-btn { background: none; border: none; font-size: 13px; color: var(--olive); cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px; padding: 0; text-decoration: none; }
-  .back-btn svg { width: 16px; height: 16px; }
-  .back-sep { color: var(--beige-dark); }
-  .detail-nav { display: flex; gap: 1rem; margin-left: auto; }
-  .detail-nav a { font-size: 12px; color: var(--text-muted); text-decoration: none; padding: 4px 10px; border: 1px solid var(--beige); border-radius: 2px; }
-  .detail-nav a:hover { color: var(--olive); border-color: var(--olive); }
-  .detail-hero { position: relative; height: 400px; background: var(--olive-pale); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
-  .detail-hero-placeholder { font-family: 'Cormorant Garamond', serif; font-size: 6rem; color: var(--olive-light); font-weight: 300; }
-  .detail-hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(30,36,16,0.7)); padding: 3rem 4rem 2rem; display: flex; align-items: flex-end; justify-content: space-between; }
-  .detail-hero-title h1 { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; color: white; line-height: 1; }
-  .detail-price-box { text-align: right; }
-  .detail-price-box .price { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; color: white; }
-  .detail-price-box .price-note { font-size: 12px; color: rgba(255,255,255,0.6); }
-  .detail-body { padding: 3rem 4rem; display: grid; grid-template-columns: 1fr 340px; gap: 3rem; }
-  .detail-specs-card { background: white; border: 1px solid var(--beige); border-radius: 2px; padding: 1.8rem; margin-bottom: 1.5rem; }
-  .detail-specs-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--olive-dark); margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--beige-light); }
-  .specs-table { width: 100%; border-collapse: collapse; }
-  .specs-table tr { border-bottom: 1px solid var(--beige-light); }
-  .specs-table tr:last-child { border-bottom: none; }
-  .specs-table td { padding: 0.7rem 0; font-size: 14px; }
-  .specs-table td:first-child { color: var(--text-muted); width: 50%; }
-  .specs-table td:last-child { font-weight: 500; color: var(--text-dark); }
-  .eq-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .eq-chip { background: var(--olive-pale); color: var(--olive-dark); font-size: 13px; padding: 6px 14px; border-radius: 2px; display: flex; align-items: center; gap: 6px; }
-  .eq-chip::before { content: '✓'; color: var(--olive); font-size: 12px; }
-  .detail-sidebar { }
-  .contact-card { background: var(--olive-dark); border-radius: 2px; padding: 2rem; margin-bottom: 1.5rem; }
-  .contact-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; color: var(--beige-light); margin-bottom: 1.5rem; }
-  .contact-form { display: flex; flex-direction: column; gap: 0.8rem; }
-  .contact-form input, .contact-form textarea { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 0.65rem 0.9rem; font-size: 13px; font-family: 'DM Sans', sans-serif; border-radius: 2px; outline: none; transition: border-color 0.2s; }
-  .contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(255,255,255,0.35); }
-  .contact-form input:focus, .contact-form textarea:focus { border-color: var(--beige); }
-  .contact-form textarea { resize: vertical; min-height: 90px; }
-  .contact-form button { background: var(--beige); color: var(--olive-dark); border: none; padding: 0.75rem; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; font-family: 'DM Sans', sans-serif; border-radius: 2px; transition: background 0.2s; }
-  .contact-form button:hover { background: var(--beige-light); }
-  .contact-direct { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); }
-  .contact-direct p { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
-  .contact-direct a { display: block; font-size: 13px; color: rgba(255,255,255,0.65); text-decoration: none; margin-bottom: 0.3rem; }
-  .other-props { background: white; border: 1px solid var(--beige); border-radius: 2px; padding: 1.5rem; }
-  .other-props h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; color: var(--olive-dark); margin-bottom: 1rem; }
-  .mini-prop { display: flex; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--beige-light); cursor: pointer; text-decoration: none; color: inherit; align-items: center; }
-  .mini-prop:last-child { border-bottom: none; padding-bottom: 0; }
-  .mini-prop:hover .mini-name { color: var(--olive); }
-  .mini-thumb { width: 50px; height: 40px; background: var(--olive-pale); border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--olive-light); }
-  .mini-name { font-size: 14px; font-weight: 500; color: var(--text-dark); display: block; transition: color 0.15s; }
-  .mini-type { font-size: 12px; color: var(--text-muted); display: block; }
-  .highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
-  .highlight-img { aspect-ratio: 4/3; background: var(--olive-pale); border-radius: 2px; overflow: hidden; cursor: pointer; }
-  .highlight-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-  .highlight-img:hover img { transform: scale(1.04); }
-  .highlight-img .ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--olive-light); }
-  .carousel-card { background: white; border: 1px solid var(--beige); border-radius: 2px; overflow: hidden; margin-bottom: 1.5rem; }
-  .carousel-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--olive-dark); padding: 1.2rem 1.5rem 0; }
-  .carousel-wrap { position: relative; }
-  .carousel-track-outer { overflow: hidden; }
-  .carousel-track { display: flex; transition: transform 0.35s ease; }
-  .carousel-slide { min-width: 100%; aspect-ratio: 16/9; background: var(--olive-pale); flex-shrink: 0; }
-  .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
-  .carousel-slide .ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 3rem; color: var(--olive-light); }
-  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: 1px solid var(--beige); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 2; transition: background 0.2s; }
-  .carousel-btn:hover { background: white; }
-  .carousel-btn.prev { left: 10px; }
-  .carousel-btn.next { right: 10px; }
-  .carousel-dots { display: flex; justify-content: center; gap: 6px; padding: 0.8rem; }
-  .carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--beige); border: none; cursor: pointer; padding: 0; transition: background 0.2s; }
-  .carousel-dot.active { background: var(--olive); }
-  
-    .list-header, .filter-bar, .property-list, .detail-back, .detail-body { padding-left: 1.5rem; padding-right: 1.5rem; }
-    .prop-row { grid-template-columns: 1fr; }
-    .prop-row-img { height: 200px; }
-    .detail-body { grid-template-columns: 1fr; }
-    .detail-hero-overlay { padding: 1.5rem; }
-  }
-  /* ── MOBILE NAV (bottom tab bar) ───────────────────────────── */
-  .mobile-nav {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--olive-dark);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    z-index: 200;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .mobile-nav-inner {
-    display: flex;
-    justify-content: space-around;
-  }
-  .mobile-nav a {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding: 10px 4px;
-    text-decoration: none;
-    color: rgba(255,255,255,0.45);
-    font-size: 10px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: color 0.15s;
-  }
-  .mobile-nav a svg { width: 20px; height: 20px; }
-  .mobile-nav a.active, .mobile-nav a:hover { color: var(--beige); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empreendimentos — Empresa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --olive: #4a5c2f;
+      --olive-dark: #2e3a1c;
+      --olive-mid: #6b7c47;
+      --olive-light: #c8d4a8;
+      --olive-pale: #eef2e6;
+      --beige: #d6c9b0;
+      --beige-light: #f5f0e8;
+      --beige-dark: #b5a48a;
+      --cream: #faf8f3;
+      --text-dark: #1e2410;
+      --text-mid: #4a4a3a;
+      --text-muted: #8a8870;
+      --sidebar-w: 220px;
+      --mobile-header-h: 56px;
+    }
 
-  @media (max-width: 768px) {
-    :root { --sidebar-w: 0px; }
-    .sidebar { display: none; }
-    .mobile-nav { display: block; }
-    .main { padding-bottom: 64px; }
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--olive-dark);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 0;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* MOBILE HEADER */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--mobile-header-h);
+      background: var(--olive-dark);
+      z-index: 150;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.8rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      color: var(--beige);
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hamburger-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .mobile-header .mobile-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      color: var(--beige-light);
+      letter-spacing: 0.08em;
+      font-weight: 300;
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .sidebar-logo {
+      padding: 0 1.8rem 2.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-logo .logo-badge {
+      width: 48px;
+      height: 48px;
+      background: var(--beige);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--olive-dark);
+      margin-bottom: 0.8rem;
+    }
+
+    .sidebar-logo .company-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      color: var(--beige-light);
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      font-weight: 300;
+    }
+
+    .nav-links {
+      flex: 1;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.75rem 1.8rem;
+      color: rgba(255, 255, 255, 0.55);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--beige);
+      border-left-color: var(--beige);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+      font-weight: 500;
+    }
+
+    .sidebar-contact {
+      padding: 1.5rem 1.8rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-contact p {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-contact a {
+      display: block;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      margin-bottom: 0.3rem;
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+    }
+
+    #list-view {
+      display: block;
+    }
+
+    .list-header {
+      background: var(--olive);
+      padding: 3.5rem 4rem 3rem;
+    }
+
+    .list-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--beige-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .list-header p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 300;
+    }
+
+    .filter-bar {
+      background: var(--beige-light);
+      border-bottom: 1px solid var(--beige);
+      padding: 1rem 4rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-right: 0.5rem;
+    }
+
+    .filter-btn {
+      background: white;
+      border: 1px solid var(--beige);
+      color: var(--text-mid);
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--olive);
+      color: white;
+      border-color: var(--olive);
+    }
+
+    .property-list {
+      padding: 3rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .prop-row {
+      background: white;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .prop-row:hover {
+      box-shadow: 0 6px 28px rgba(74, 92, 47, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .prop-row-img {
+      height: 220px;
+      background: var(--olive-pale);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .prop-row-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .prop-row-img .img-placeholder {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      color: var(--olive-light);
+      font-weight: 300;
+    }
+
+    .prop-fase {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .fase-vendida {
+      background: rgba(139, 0, 0, 0.9);
+      color: var(--beige-light);
+    }
+
+    .fase-vendida {
+      background: #8b2020;
+      color: white;
+    }
+
+    .fase-concluida {
+      background: var(--olive-dark);
+      color: var(--beige-light);
+    }
+
+    .fase-construcao {
+      background: var(--beige-dark);
+      color: white;
+    }
+
+    .fase-projeto {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--olive-dark);
+      border: 1px solid var(--beige);
+    }
+
+    .prop-row-body {
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .prop-row-loc {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--olive-mid);
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .prop-row-loc svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .prop-row-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      color: var(--olive-dark);
+      margin-bottom: 0.3rem;
+    }
+
+    .prop-row-type {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+    }
+
+    .prop-specs-grid {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .spec-item .val {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-dark);
+      display: block;
+    }
+
+    .spec-item .lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .prop-row-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--beige-light);
+    }
+
+    .prop-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--olive-dark);
+    }
+
+    .prop-price small {
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-details {
+      background: var(--olive);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .btn-details:hover {
+      background: var(--olive-dark);
+    }
+
+    .equipamentos {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .eq-tag {
+      background: var(--olive-pale);
+      color: var(--olive);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-weight: 400;
+    }
+
+    #detail-view {
+      display: none;
+    }
+
+    .detail-back {
+      background: var(--beige-light);
+      border-bottom: 1px solid var(--beige);
+      padding: 1rem 4rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: var(--olive);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      text-decoration: none;
+    }
+
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .back-sep {
+      color: var(--beige-dark);
+    }
+
+    .detail-nav {
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+    }
+
+    .detail-nav a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+    }
+
+    .detail-nav a:hover {
+      color: var(--olive);
+      border-color: var(--olive);
+    }
+
+    .detail-hero {
+      position: relative;
+      height: 400px;
+      background: var(--olive-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-hero-placeholder {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 6rem;
+      color: var(--olive-light);
+      font-weight: 300;
+    }
+
+    .detail-hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(30, 36, 16, 0.7));
+      padding: 3rem 4rem 2rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .detail-hero-title h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: white;
+      line-height: 1;
+    }
+
+    .detail-price-box {
+      text-align: right;
+    }
+
+    .detail-price-box .price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .detail-price-box .price-note {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .detail-body {
+      padding: 3rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 3rem;
+    }
+
+    .detail-specs-card {
+      background: white;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-specs-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--olive-dark);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--beige-light);
+    }
+
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .specs-table tr {
+      border-bottom: 1px solid var(--beige-light);
+    }
+
+    .specs-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .specs-table td {
+      padding: 0.7rem 0;
+      font-size: 14px;
+    }
+
+    .specs-table td:first-child {
+      color: var(--text-muted);
+      width: 50%;
+    }
+
+    .specs-table td:last-child {
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .eq-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .eq-chip {
+      background: var(--olive-pale);
+      color: var(--olive-dark);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .eq-chip::before {
+      content: '✓';
+      color: var(--olive);
+      font-size: 12px;
+    }
+
+    .detail-sidebar {}
+
+    .contact-card {
+      background: var(--olive-dark);
+      border-radius: 2px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: var(--beige-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 0.65rem 0.9rem;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: var(--beige);
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .contact-form button {
+      background: var(--beige);
+      color: var(--olive-dark);
+      border: none;
+      padding: 0.75rem;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .contact-form button:hover {
+      background: var(--beige-light);
+    }
+
+    .contact-direct {
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .contact-direct p {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-direct a {
+      display: block;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      margin-bottom: 0.3rem;
+    }
+
+    .other-props {
+      background: white;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+      padding: 1.5rem;
+    }
+
+    .other-props h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--olive-dark);
+      margin-bottom: 1rem;
+    }
+
+    .mini-prop {
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--beige-light);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      align-items: center;
+    }
+
+    .mini-prop:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .mini-prop:hover .mini-name {
+      color: var(--olive);
+    }
+
+    .mini-thumb {
+      width: 50px;
+      height: 40px;
+      background: var(--olive-pale);
+      border-radius: 2px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--olive-light);
+    }
+
+    .mini-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+      display: block;
+      transition: color 0.15s;
+    }
+
+    .mini-type {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .highlight-img {
+      aspect-ratio: 4/3;
+      background: var(--olive-pale);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .highlight-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .highlight-img:hover img {
+      transform: scale(1.04);
+    }
+
+    .highlight-img .ph {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--olive-light);
+    }
+
+    .carousel-card {
+      background: white;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .carousel-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--olive-dark);
+      padding: 1.2rem 1.5rem 0;
+    }
+
+    .carousel-wrap {
+      position: relative;
+    }
+
+    .carousel-track-outer {
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.35s ease;
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--olive-pale);
+      flex-shrink: 0;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-slide .ph {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      color: var(--olive-light);
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--beige);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background 0.2s;
+    }
+
+    .carousel-btn:hover {
+      background: white;
+    }
+
+    .carousel-btn.prev {
+      left: 10px;
+    }
+
+    .carousel-btn.next {
+      right: 10px;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 0.8rem;
+    }
+
+    .carousel-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--beige);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s;
+    }
+
+    .carousel-dot.active {
+      background: var(--olive);
+    }
+
+    @media (max-width: 1024px) {
+
+      .list-header,
+      .filter-bar,
+      .property-list,
+      .detail-back,
+      .detail-body {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .prop-row {
+        grid-template-columns: 1fr;
+      }
+
+      .prop-row-img {
+        height: 200px;
+      }
+
+      .detail-body {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-hero-overlay {
+        padding: 1.5rem;
+      }
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--olive-dark);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 200;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .mobile-nav-inner {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .mobile-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 12px 4px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 48px;
+    }
+
+    .mobile-nav a svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .mobile-nav a.active,
+    .mobile-nav a:hover {
+      color: var(--beige);
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --sidebar-w: 0px;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+        padding-top: calc(var(--mobile-header-h) + 1rem);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .mobile-nav {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0;
+        padding-top: var(--mobile-header-h);
+        padding-bottom: 72px;
+      }
+
+      .nav-link {
+        padding: 1rem 1.8rem;
+        font-size: 14px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+      }
+    }
 
 
-  @media (max-width: 768px) {
-    .list-header { padding: 2rem 1.5rem 1.5rem; }
-    .filter-bar { padding: 0.8rem 1.5rem; gap: 0.5rem; }
-    .property-list { padding: 1.5rem; gap: 1.5rem; }
-    .prop-row { grid-template-columns: 1fr; }
-    .prop-row-img { height: 180px; }
-    .prop-specs-grid { flex-wrap: wrap; gap: 1rem; }
-    .detail-back { padding: 0.8rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
-    .detail-nav { margin-left: 0; }
-    .detail-hero { height: 250px; }
-    .detail-hero-overlay { padding: 1rem 1.5rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-    .detail-hero-title h1 { font-size: 2rem; }
-    .detail-price-box { text-align: left; }
-    .detail-price-box .price { font-size: 1.5rem; }
-    .detail-body { padding: 1.5rem; grid-template-columns: 1fr; gap: 1.5rem; }
-    .highlights-grid { grid-template-columns: repeat(3,1fr); gap: 0.4rem; }
-    .contact-card { padding: 1.5rem; }
-  }
-</style>
+    @media (max-width: 768px) {
+      .list-header {
+        padding: 2rem 1.5rem 1.5rem;
+      }
+
+      .filter-bar {
+        padding: 0.8rem 1.5rem;
+        gap: 0.5rem;
+      }
+
+      .property-list {
+        padding: 1.5rem;
+        gap: 1.5rem;
+      }
+
+      .prop-row {
+        grid-template-columns: 1fr;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .prop-row-img {
+        height: 180px;
+      }
+
+      .prop-specs-grid {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .detail-back {
+        padding: 0.8rem 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .detail-nav {
+        margin-left: 0;
+      }
+
+      .detail-hero {
+        height: 250px;
+      }
+
+      .detail-hero-overlay {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .detail-hero-title h1 {
+        font-size: 2rem;
+      }
+
+      .detail-price-box {
+        text-align: left;
+      }
+
+      .detail-price-box .price {
+        font-size: 1.5rem;
+      }
+
+      .detail-body {
+        padding: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .highlights-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.4rem;
+      }
+
+      .contact-card {
+        padding: 1.5rem;
+      }
+
+      .btn-details {
+        min-height: 44px;
+        padding: 0.7rem 1.4rem;
+        font-size: 13px;
+      }
+
+      .filter-btn {
+        min-height: 40px;
+        padding: 8px 14px;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        font-size: 16px;
+      }
+
+      .contact-form button {
+        min-height: 48px;
+        font-size: 14px;
+      }
+
+      .list-header h1 {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
 </head>
-<body>
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-badge">E</div>
-    <div class="company-name">Empresa<br>Imobiliária</div>
-  </div>
-  <nav class="nav-links">
-    <a href="index.html" class="nav-link">Início</a>
-    <a href="properties.html" class="nav-link active">Empreendimentos</a>
-    <a href="sell.html" class="nav-link">Vender</a>
-    <a href="about.html" class="nav-link">A Empresa</a>
-  </nav>
-  <div class="sidebar-contact">
-    <p>Contactos</p>
-    <a href="tel:969800013">969 800 013</a>
-    <a href="mailto:XX@XX.pt">XX@XX.pt</a>
-  </div>
-</aside>
-<main class="main">
-  <div id="list-view">
-    <div class="list-header">
-      <h1>Empreendimentos</h1>
-      <p>5 projetos em 5 localizações</p>
-    </div>
 
-    <!-- ═══ FILTROS POR DISTRITO ═══════════════════════════════════════════
+<body>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+    <span class="mobile-logo">Empresa Imobiliária</span>
+  </header>
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-badge">E</div>
+      <div class="company-name">Empresa<br>Imobiliária</div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Início</a>
+      <a href="properties.html" class="nav-link active">Empreendimentos</a>
+      <a href="sell.html" class="nav-link">Vender</a>
+      <a href="about.html" class="nav-link">A Empresa</a>
+    </nav>
+    <div class="sidebar-contact">
+      <p>Contactos</p>
+      <a href="tel:969800013">969 800 013</a>
+      <a href="mailto:XX@XX.pt">XX@XX.pt</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div id="list-view">
+      <div class="list-header">
+        <h1>Empreendimentos</h1>
+        <p>5 projetos em 5 localizações</p>
+      </div>
+
+      <!-- ═══ FILTROS POR DISTRITO ═══════════════════════════════════════════
          Para adicionar um distrito:
          1. Adiciona um botão aqui: <button class="filter-btn" onclick="filterProps('distrito3', this)">Nome do Distrito</button>
          2. Adiciona distrito:'distrito3' ao objeto da casa no JS em baixo
     ════════════════════════════════════════════════════════════════════════ -->
-    <div class="filter-bar">
-      <span class="filter-label">Distrito:</span>
-      <button class="filter-btn active" onclick="filterProps('todos', this)">Todos</button>
-      <button class="filter-btn" onclick="filterProps('Lisboa', this)">Lisboa</button>
-      <button class="filter-btn" onclick="filterProps('Setúbal', this)">Setúbal</button>
-    </div>
+      <div class="filter-bar">
+        <span class="filter-label">Distrito:</span>
+        <button class="filter-btn active" onclick="filterProps('todos', this)">Todos</button>
+        <button class="filter-btn" onclick="filterProps('Lisboa', this)">Lisboa</button>
+        <button class="filter-btn" onclick="filterProps('Setúbal', this)">Setúbal</button>
+      </div>
 
-    <div class="property-list" id="prop-list">
+      <div class="property-list" id="prop-list">
 
-      <!-- data-distrito determina o filtro. Manter data-fase apenas para a badge visual -->
-      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa1')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C1</span>
-          <span class="prop-fase fase-vendida">Vendida</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Loures, Santa Iria de Azóia
+        <!-- data-distrito determina o filtro. Manter data-fase apenas para a badge visual -->
+        <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa1')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C1</span>
+            <span class="prop-fase fase-vendida">Vendida</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Loures, Santa Iria de Azóia
+              </div>
+              <div class="prop-row-name">Pirescoxe</div>
+              <div class="prop-row-type">1 Moradia T2 + Terraço</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">115 m²</span><span class="lbl">Área Total</span></div>
+                <div class="spec-item"><span class="val">T2+terraço</span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A</span><span class="lbl">Classe Energética</span></div>
+              </div>
+              <div class="equipamentos">
+                <span class="eq-tag">Cozinha Equipada</span>
+                <span class="eq-tag">Ar Condicionado</span>
+                <span class="eq-tag">Painéis Solares</span>
+                <span class="eq-tag">Alarme CCTV</span>
+                <span class="eq-tag">VMC</span>
+              </div>
             </div>
-            <div class="prop-row-name">Pirescoxe</div>
-            <div class="prop-row-type">1 Moradia T2 + Terraço</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">115 m²</span><span class="lbl">Área Total</span></div>
-              <div class="spec-item"><span class="val">T2+terraço</span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A</span><span class="lbl">Classe Energética</span></div>
+            <div class="prop-row-footer">
+              <div class="prop-price">415 k€</div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa1')">Ver Detalhes →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa2')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C2</span>
+            <span class="prop-fase fase-construcao">Em Construção</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Mafra, Zambujal
+              </div>
+              <div class="prop-row-name">Zambujal A</div>
+              <div class="prop-row-type">Moradia T4</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">250 m²</span><span class="lbl">Área Total</span></div>
+                <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+              </div>
+              <div class="equipamentos">
+                <span class="eq-tag">Cozinha Equipada</span>
+                <span class="eq-tag">Painéis Solares</span>
+                <span class="eq-tag">Piscina Aquecida</span>
+                <span class="eq-tag">VMC</span>
+                <span class="eq-tag">Aquecimento Radiante</span>
+              </div>
+            </div>
+            <div class="prop-row-footer">
+              <div class="prop-price">750 k€ <small>a partir de</small></div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa2')">Ver Detalhes →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa3')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C2</span>
+            <span class="prop-fase fase-construcao">Em Construção</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Mafra, Zambujal
+              </div>
+              <div class="prop-row-name">Zambujal B</div>
+              <div class="prop-row-type">Moradia T4</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">250 m²</span><span class="lbl">Área Total</span></div>
+                <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+              </div>
+              <div class="equipamentos">
+                <span class="eq-tag">Cozinha Equipada</span>
+                <span class="eq-tag">Painéis Solares</span>
+                <span class="eq-tag">Piscina Aquecida</span>
+                <span class="eq-tag">VMC</span>
+                <span class="eq-tag">Aquecimento Radiante</span>
+              </div>
+            </div>
+            <div class="prop-row-footer">
+              <div class="prop-price">750 k€ <small>a partir de</small></div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa3')">Ver Detalhes →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa4')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C4</span>
+            <span class="prop-fase fase-projeto">Licença a Pagamento</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Concelho W, Freguesia A
+              </div>
+              <div class="prop-row-name">Castelinhos</div>
+              <div class="prop-row-type">10 Moradias T4</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">2500 m²</span><span class="lbl">Área</span></div>
+                <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+              </div>
             </div>
             <div class="equipamentos">
               <span class="eq-tag">Cozinha Equipada</span>
-              <span class="eq-tag">Ar Condicionado</span>
               <span class="eq-tag">Painéis Solares</span>
-              <span class="eq-tag">Alarme CCTV</span>
+              <span class="eq-tag">Piscina Aquecida</span>
               <span class="eq-tag">VMC</span>
+              <span class="eq-tag">Aquecimento Radiante</span>
+            </div>
+            <div class="prop-row-footer">
+              <div class="prop-price"
+                style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de
+                800k€</div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa4')">Ver Detalhes →</button>
             </div>
           </div>
-          <div class="prop-row-footer">
-            <div class="prop-price">415 k€</div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa1')">Ver Detalhes →</button>
-          </div>
         </div>
-      </div>
 
-      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa2')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C2</span>
-          <span class="prop-fase fase-construcao">Em Construção</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Mafra, Zambujal
-            </div>
-            <div class="prop-row-name">Zambujal A</div>
-            <div class="prop-row-type">Moradia T4</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">250 m²</span><span class="lbl">Área Total</span></div>
-              <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+        <div class="prop-row" data-distrito="Setúbal" onclick="showDetail('casa5')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C5</span>
+            <span class="prop-fase fase-projeto">Projeto</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Sines
+              </div>
+              <div class="prop-row-name">Zona Histórica de Sines</div>
+              <div class="prop-row-type">Moradia Bifamiliar 2T0</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">120 m²</span><span class="lbl">Área Total</span></div>
+                <div class="spec-item"><span class="val"> 2 frações T0 </span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+              </div>
             </div>
             <div class="equipamentos">
               <span class="eq-tag">Cozinha Equipada</span>
@@ -296,426 +1392,364 @@
               <span class="eq-tag">VMC</span>
               <span class="eq-tag">Aquecimento Radiante</span>
             </div>
-          </div>
-          <div class="prop-row-footer">
-            <div class="prop-price">750 k€ <small>a partir de</small></div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa2')">Ver Detalhes →</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa3')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C2</span>
-          <span class="prop-fase fase-construcao">Em Construção</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Mafra, Zambujal
+            <div class="prop-row-footer">
+              <div class="prop-price"
+                style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de
+                280k€</div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa5')">Ver Detalhes →</button>
             </div>
-            <div class="prop-row-name">Zambujal B</div>
-            <div class="prop-row-type">Moradia T4</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">250 m²</span><span class="lbl">Área Total</span></div>
-              <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+          </div>
+        </div>
+
+        <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa6')">
+          <div class="prop-row-img">
+            <span class="img-placeholder">C6</span>
+            <span class="prop-fase fase-projeto">Projeto</span>
+          </div>
+          <div class="prop-row-body">
+            <div class="prop-row-top">
+              <div class="prop-row-loc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                Concelho W, Freguesia C
+              </div>
+              <div class="prop-row-name">S. João da Talha</div>
+              <div class="prop-row-type">6 Apartamentos T2/T3</div>
+              <div class="prop-specs-grid">
+                <div class="spec-item"><span class="val">600 m²</span><span class="lbl">Área</span></div>
+                <div class="spec-item"><span class="val">T2/T3</span><span class="lbl">Tipologia</span></div>
+                <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
+              </div>
             </div>
             <div class="equipamentos">
-              <span class="eq-tag">Cozinha Equipada</span>
-              <span class="eq-tag">Painéis Solares</span>
-              <span class="eq-tag">Piscina Aquecida</span>
-              <span class="eq-tag">VMC</span>
-              <span class="eq-tag">Aquecimento Radiante</span>
-            </div>
-          </div>
-          <div class="prop-row-footer">
-            <div class="prop-price">750 k€ <small>a partir de</small></div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa3')">Ver Detalhes →</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa4')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C4</span>
-          <span class="prop-fase fase-projeto">Licença a Pagamento</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Concelho W, Freguesia A
-            </div>
-            <div class="prop-row-name">Castelinhos</div>
-            <div class="prop-row-type">10 Moradias T4</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">2500 m²</span><span class="lbl">Área</span></div>
-              <div class="spec-item"><span class="val">T4</span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
-            </div>
-          </div>
-           <div class="equipamentos">
-              <span class="eq-tag">Cozinha Equipada</span>
-              <span class="eq-tag">Painéis Solares</span>
-              <span class="eq-tag">Piscina Aquecida</span>
-              <span class="eq-tag">VMC</span>
-              <span class="eq-tag">Aquecimento Radiante</span>
-            </div>
-          <div class="prop-row-footer">
-            <div class="prop-price" style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de 800k€</div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa4')">Ver Detalhes →</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="prop-row" data-distrito="Setúbal" onclick="showDetail('casa5')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C5</span>
-          <span class="prop-fase fase-projeto">Projeto</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Sines
-            </div>
-            <div class="prop-row-name">Zona Histórica de Sines</div>
-            <div class="prop-row-type">Moradia Bifamiliar 2T0</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">120 m²</span><span class="lbl">Área Total</span></div>
-              <div class="spec-item"><span class="val"> 2 frações T0 </span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
-            </div>
-          </div>
-           <div class="equipamentos">
-              <span class="eq-tag">Cozinha Equipada</span>
-              <span class="eq-tag">Painéis Solares</span>
-              <span class="eq-tag">Piscina Aquecida</span>
-              <span class="eq-tag">VMC</span>
-              <span class="eq-tag">Aquecimento Radiante</span>
-            </div>
-          <div class="prop-row-footer">
-            <div class="prop-price" style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de 280k€</div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa5')">Ver Detalhes →</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="prop-row" data-distrito="Lisboa" onclick="showDetail('casa6')">
-        <div class="prop-row-img">
-          <span class="img-placeholder">C6</span>
-          <span class="prop-fase fase-projeto">Projeto</span>
-        </div>
-        <div class="prop-row-body">
-          <div class="prop-row-top">
-            <div class="prop-row-loc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              Concelho W, Freguesia C
-            </div>
-            <div class="prop-row-name">S. João da Talha</div>
-            <div class="prop-row-type">6 Apartamentos T2/T3</div>
-            <div class="prop-specs-grid">
-              <div class="spec-item"><span class="val">600 m²</span><span class="lbl">Área</span></div>
-              <div class="spec-item"><span class="val">T2/T3</span><span class="lbl">Tipologia</span></div>
-              <div class="spec-item"><span class="val">A+</span><span class="lbl">Classe Energética</span></div>
-            </div>
-          </div>
-           <div class="equipamentos">
               <span class="eq-tag">Painéis Solares</span>
               <span class="eq-tag">Garagem</span>
               <span class="eq-tag">Elevador</span>
               <span class="eq-tag">VMC</span>
               <span class="eq-tag">Aquecimento Radiante</span>
             </div>
-          <div class="prop-row-footer">
-            <div class="prop-price" style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de 380k€/fração</div>
-            <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa6')">Ver Detalhes →</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- DETAIL VIEW -->
-  <div id="detail-view">
-    <div class="detail-back">
-      <button class="back-btn" onclick="showList()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Todos os empreendimentos
-      </button>
-      <span class="back-sep">|</span>
-      <span id="detail-breadcrumb" style="font-size:13px; color:var(--text-muted);"></span>
-      <div class="detail-nav">
-        <a href="sell.html">Vender</a>
-        <a href="about.html">A Empresa</a>
-      </div>
-    </div>
-    <div class="detail-hero">
-      <span class="detail-hero-placeholder" id="detail-img-placeholder"></span>
-      <div class="detail-hero-overlay">
-        <div class="detail-hero-title">
-          <span class="prop-fase" id="detail-fase-badge"></span>
-          <h1 id="detail-name"></h1>
-          <div id="detail-type" style="color:rgba(255,255,255,0.6); font-size:15px; margin-top:4px;"></div>
-        </div>
-        <div class="detail-price-box">
-          <div class="price" id="detail-price"></div>
-          <div class="price-note" id="detail-price-note"></div>
-          <div id="detail-loc" style="color:rgba(255,255,255,0.5); font-size:12px; margin-top:4px; text-transform:uppercase; letter-spacing:0.08em;"></div>
-        </div>
-      </div>
-    </div>
-    <div class="detail-body">
-      <div>
-        <div class="detail-specs-card">
-          <h3>Características</h3>
-          <table class="specs-table" id="detail-specs-table"></table>
-        </div>
-        <div class="highlights-grid" id="detail-highlights"></div>
-        <div class="detail-specs-card" id="detail-eq-card">
-          <h3>Equipamentos</h3>
-          <div class="eq-grid" id="detail-eq-grid"></div>
-        </div>
-        <div class="carousel-card" id="detail-carousel-card">
-          <h3>Galeria</h3>
-          <div class="carousel-wrap">
-            <div class="carousel-track-outer">
-              <div class="carousel-track" id="carousel-track"></div>
+            <div class="prop-row-footer">
+              <div class="prop-price"
+                style="font-size:1rem; font-family:'DM Sans'; color:var(--text-muted); font-weight:300;">A partir de
+                380k€/fração</div>
+              <button class="btn-details" onclick="event.stopPropagation(); showDetail('casa6')">Ver Detalhes →</button>
             </div>
-            <button class="carousel-btn prev" onclick="carouselMove(-1)">&#8249;</button>
-            <button class="carousel-btn next" onclick="carouselMove(1)">&#8250;</button>
           </div>
-          <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="detail-view">
+      <div class="detail-back">
+        <button class="back-btn" onclick="showList()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+          Todos os empreendimentos
+        </button>
+        <span class="back-sep">|</span>
+        <span id="detail-breadcrumb" style="font-size:13px; color:var(--text-muted);"></span>
+        <div class="detail-nav">
+          <a href="sell.html">Vender</a>
+          <a href="about.html">A Empresa</a>
         </div>
       </div>
-      <div class="detail-sidebar">
-        <div class="contact-card">
-          <h3>Agendar visita</h3>
-          <div data-fs-success>✓ Pedido enviado! Entraremos em contacto brevemente.</div>
-          <div data-fs-error></div>
-          <form class="contact-form" id="visit-form">
-            <input type="hidden" id="cf-property" name="Empreendimento" value="">
-            <input type="text"  name="Nome"      placeholder="Nome"     id="cf-name"  data-fs-field required>
-            <input type="tel"   name="Telefone"  placeholder="Telefone" id="cf-tel"   data-fs-field required>
-            <input type="email" name="Email"     placeholder="Email"    id="cf-email" data-fs-field>
-            <textarea           name="Mensagem"  placeholder="Mensagem (opcional)"    data-fs-field></textarea>
-            <button type="submit" data-fs-submit-btn>Enviar pedido</button>
-          </form>
-          <div class="contact-direct">
-            <p>Ou contacte-nos diretamente</p>
-            <a href="tel:969800013">📞 969 800 013</a>
-            <a href="mailto:XX@XX.pt">✉ XX@XX.pt</a>
+      <div class="detail-hero">
+        <span class="detail-hero-placeholder" id="detail-img-placeholder"></span>
+        <div class="detail-hero-overlay">
+          <div class="detail-hero-title">
+            <span class="prop-fase" id="detail-fase-badge"></span>
+            <h1 id="detail-name"></h1>
+            <div id="detail-type" style="color:rgba(255,255,255,0.6); font-size:15px; margin-top:4px;"></div>
+          </div>
+          <div class="detail-price-box">
+            <div class="price" id="detail-price"></div>
+            <div class="price-note" id="detail-price-note"></div>
+            <div id="detail-loc"
+              style="color:rgba(255,255,255,0.5); font-size:12px; margin-top:4px; text-transform:uppercase; letter-spacing:0.08em;">
+            </div>
           </div>
         </div>
-        <div class="other-props">
-          <h3>Outros empreendimentos</h3>
-          <div id="other-props-list"></div>
+      </div>
+      <div class="detail-body">
+        <div>
+          <div class="detail-specs-card">
+            <h3>Características</h3>
+            <table class="specs-table" id="detail-specs-table"></table>
+          </div>
+          <div class="highlights-grid" id="detail-highlights"></div>
+          <div class="detail-specs-card" id="detail-eq-card">
+            <h3>Equipamentos</h3>
+            <div class="eq-grid" id="detail-eq-grid"></div>
+          </div>
+          <div class="carousel-card" id="detail-carousel-card">
+            <h3>Galeria</h3>
+            <div class="carousel-wrap">
+              <div class="carousel-track-outer">
+                <div class="carousel-track" id="carousel-track"></div>
+              </div>
+              <button class="carousel-btn prev" onclick="carouselMove(-1)">&#8249;</button>
+              <button class="carousel-btn next" onclick="carouselMove(1)">&#8250;</button>
+            </div>
+            <div class="carousel-dots" id="carousel-dots"></div>
+          </div>
+        </div>
+        <div class="detail-sidebar">
+          <div class="contact-card">
+            <h3>Agendar visita</h3>
+            <div data-fs-success>✓ Pedido enviado! Entraremos em contacto brevemente.</div>
+            <div data-fs-error></div>
+            <form class="contact-form" id="visit-form">
+              <input type="hidden" id="cf-property" name="Empreendimento" value="">
+              <input type="text" name="Nome" placeholder="Nome" id="cf-name" data-fs-field required>
+              <input type="tel" name="Telefone" placeholder="Telefone" id="cf-tel" data-fs-field required>
+              <input type="email" name="Email" placeholder="Email" id="cf-email" data-fs-field>
+              <textarea name="Mensagem" placeholder="Mensagem (opcional)" data-fs-field></textarea>
+              <button type="submit" data-fs-submit-btn>Enviar pedido</button>
+            </form>
+            <div class="contact-direct">
+              <p>Ou contacte-nos diretamente</p>
+              <a href="tel:969800013">📞 969 800 013</a>
+              <a href="mailto:XX@XX.pt">✉ XX@XX.pt</a>
+            </div>
+          </div>
+          <div class="other-props">
+            <h3>Outros empreendimentos</h3>
+            <div id="other-props-list"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script src="https://unpkg.com/@formspree/ajax@1"></script>
-<script>
-// ═══════════════════════════════════════════════════════════════════════════
-// DADOS DAS CASAS
-// Para cada casa: editar loc (Concelho, Freguesia), distrito, specs, etc.
-// distrito: 'Lisboa' ou 'Setúbal' — deve corresponder ao botão do filtro
-// Para adicionar um novo distrito: ver comentário na filter-bar acima
-// ═══════════════════════════════════════════════════════════════════════════
-const props = {
-  casa1: {
-    name: 'Pirescoxe', type: '1 Moradia T2+1',
-    loc: 'Loures, Santa Iria da Azóia',   // <- editar aqui
-    distrito: 'Lisboa',             // <- editar aqui
-    fase: 'vendida', faseLabel: 'Vendida',
-    price: '415 k€', priceNote: '',
-    specs: [
-      ['Área Total', '115 m²'], ['Área do Terreno', '90 m²'], ['Área de Implantação', '70 m²'],
-      ['Número de Pisos', '2 + Terraço'], ['Tipologia', 'T2 + 1'], ['Classe Energética', 'A']
-    ],
-    eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares', 'VMC'],
-    highlights: [{ src: '', label: 'Sala' }, { src: '', label: 'Cozinha' }, { src: '', label: 'Quarto' }],
-    gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto Principal' }, { src: '', caption: 'Casa de Banho' }],
-  },
-  casa2: {
-    name: 'Zambujal A', type: 'Moradia T4',
-    loc: 'Mafra, Zambujal',
-    distrito: 'Lisboa',
-    fase: 'construcao', faseLabel: 'Em Construção',
-    price: '750 k€', priceNote: 'a partir de',
-    specs: [
-      ['Área', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
-      ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
-    ],
-    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
-    highlights: [{ src: '', label: 'Exterior' }, { src: '', label: 'Interior' }, { src: '', label: 'Jardim' }],
-    gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
-  },
-  casa3: {
-    name: 'Zambujal B', type: 'Moradia T4',
-    loc: 'Mafra, Zambujal',
-    distrito: 'Lisboa',
-    fase: 'construcao', faseLabel: 'Em Construção',
-    price: '750 k€', priceNote: 'a partir de',
-    specs: [
-      ['Área', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
-      ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
-    ],
-    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
-    highlights: [{ src: '', label: 'Exterior' }, { src: '', label: 'Interior' }, { src: '', label: 'Jardim' }],
-    gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
-  },
-  casa4: {
-    name: 'Castelinhos', type: '10 Moradias T4',
-    loc: 'Sintra, A-dos-Francos',
-    distrito: 'Lisboa',
-    fase: 'projeto', faseLabel: 'Licença a Pagamento',
-    price: 'A partir de 800k€', priceNote: 'por moradia',
-    specs: [['Número de Unidades', '10'], ['Área do Terreno', '10850 m²'], 
-    ['Área de Construção', '2500 m²'], ['Tipologia', 'T4'], ['Número de Pisos', '2'], ['Classe Energética', 'A+']],
-    eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
-    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
-    gallery: [{ src: '', caption: 'Render Exterior' }, { src: '', caption: 'Implantação' }],
-  },
-  casa5: {
-    name: 'Sines', type: 'Moradia Bifamiliar 2 frações T0',
-    loc: 'Centro Histórico de Sines',
-    distrito: 'Setúbal',
-    fase: 'projeto', faseLabel: 'Projeto',
-    price: '280k€', priceNote: 'A partir de',
-    specs: [['Tipologia', '2 frações T0'], ['Tipo', 'Bifamiliar'], ['Número de Pisos', '3'], ['Classe Energética', 'A+']],
-    eq: ['Cozinha Equipada', 'Ar Condicionado','Alarme CCTV', 'Painéis Solares'],
-    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
-    gallery: [{ src: '', caption: 'Render Exterior' }],
-  },
-  casa6: {
-    name: 'S. João da Talha', type: '6 Apartamentos T2/T3',
-    loc: 'Loures, São João da Talha',
-    distrito: 'Lisboa',
-    fase: 'projeto', faseLabel: 'Projeto',
-    price: 'A partir de 380k€', priceNote: 'por fração',
-    specs: [['Área de Construção', '600 m²'], ['Tipologia', '3 frações T2'], [' ', '3 frações T3'], ['Número de Frações', '6']],
-    eq: ['Cozinha Equipada', 'Elevador', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Garagem', 'Aquecimento Radiante'],
-    highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
-    gallery: [{ src: '', caption: 'Render Exterior' }],
-  }
-};
+  <script src="https://unpkg.com/@formspree/ajax@1"></script>
+  <script>
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DADOS DAS CASAS
+    // Para cada casa: editar loc (Concelho, Freguesia), distrito, specs, etc.
+    // distrito: 'Lisboa' ou 'Setúbal' — deve corresponder ao botão do filtro
+    // Para adicionar um novo distrito: ver comentário na filter-bar acima
+    // ═══════════════════════════════════════════════════════════════════════════
+    const props = {
+      casa1: {
+        name: 'Pirescoxe', type: '1 Moradia T2+1',
+        loc: 'Loures, Santa Iria da Azóia',   // <- editar aqui
+        distrito: 'Lisboa',             // <- editar aqui
+        fase: 'vendida', faseLabel: 'Vendida',
+        price: '415 k€', priceNote: '',
+        specs: [
+          ['Área Total', '115 m²'], ['Área do Terreno', '90 m²'], ['Área de Implantação', '70 m²'],
+          ['Número de Pisos', '2 + Terraço'], ['Tipologia', 'T2 + 1'], ['Classe Energética', 'A']
+        ],
+        eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares', 'VMC'],
+        highlights: [{ src: '', label: 'Sala' }, { src: '', label: 'Cozinha' }, { src: '', label: 'Quarto' }],
+        gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto Principal' }, { src: '', caption: 'Casa de Banho' }],
+      },
+      casa2: {
+        name: 'Zambujal A', type: 'Moradia T4',
+        loc: 'Mafra, Zambujal',
+        distrito: 'Lisboa',
+        fase: 'construcao', faseLabel: 'Em Construção',
+        price: '750 k€', priceNote: 'a partir de',
+        specs: [
+          ['Área', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
+          ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
+        ],
+        eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
+        highlights: [{ src: '', label: 'Exterior' }, { src: '', label: 'Interior' }, { src: '', label: 'Jardim' }],
+        gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
+      },
+      casa3: {
+        name: 'Zambujal B', type: 'Moradia T4',
+        loc: 'Mafra, Zambujal',
+        distrito: 'Lisboa',
+        fase: 'construcao', faseLabel: 'Em Construção',
+        price: '750 k€', priceNote: 'a partir de',
+        specs: [
+          ['Área', '250 m²'], ['Área do Terreno', '500 m²'], ['Área de Implantação', '160 m²'],
+          ['Número de Pisos', '2'], ['Tipologia', 'T4'], ['Classe Energética', 'A+']
+        ],
+        eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
+        highlights: [{ src: '', label: 'Exterior' }, { src: '', label: 'Interior' }, { src: '', label: 'Jardim' }],
+        gallery: [{ src: '', caption: 'Exterior' }, { src: '', caption: 'Sala' }, { src: '', caption: 'Cozinha' }, { src: '', caption: 'Quarto' }],
+      },
+      casa4: {
+        name: 'Castelinhos', type: '10 Moradias T4',
+        loc: 'Sintra, A-dos-Francos',
+        distrito: 'Lisboa',
+        fase: 'projeto', faseLabel: 'Licença a Pagamento',
+        price: 'A partir de 800k€', priceNote: 'por moradia',
+        specs: [['Número de Unidades', '10'], ['Área do Terreno', '10850 m²'],
+        ['Área de Construção', '2500 m²'], ['Tipologia', 'T4'], ['Número de Pisos', '2'], ['Classe Energética', 'A+']],
+        eq: ['Cozinha Equipada', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Piscina Aquecida (opcional)', 'Aquecimento Radiante (opcional)'],
+        highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+        gallery: [{ src: '', caption: 'Render Exterior' }, { src: '', caption: 'Implantação' }],
+      },
+      casa5: {
+        name: 'Sines', type: 'Moradia Bifamiliar 2 frações T0',
+        loc: 'Centro Histórico de Sines',
+        distrito: 'Setúbal',
+        fase: 'projeto', faseLabel: 'Projeto',
+        price: '280k€', priceNote: 'A partir de',
+        specs: [['Tipologia', '2 frações T0'], ['Tipo', 'Bifamiliar'], ['Número de Pisos', '3'], ['Classe Energética', 'A+']],
+        eq: ['Cozinha Equipada', 'Ar Condicionado', 'Alarme CCTV', 'Painéis Solares'],
+        highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+        gallery: [{ src: '', caption: 'Render Exterior' }],
+      },
+      casa6: {
+        name: 'S. João da Talha', type: '6 Apartamentos T2/T3',
+        loc: 'Loures, São João da Talha',
+        distrito: 'Lisboa',
+        fase: 'projeto', faseLabel: 'Projeto',
+        price: 'A partir de 380k€', priceNote: 'por fração',
+        specs: [['Área de Construção', '600 m²'], ['Tipologia', '3 frações T2'], [' ', '3 frações T3'], ['Número de Frações', '6']],
+        eq: ['Cozinha Equipada', 'Elevador', 'Alarme CCTV', 'Painéis Solares', 'VMC', 'Garagem', 'Aquecimento Radiante'],
+        highlights: [{ src: '', label: 'Render 1' }, { src: '', label: 'Render 2' }, { src: '', label: 'Render 3' }],
+        gallery: [{ src: '', caption: 'Render Exterior' }],
+      }
+    };
 
-function showDetail(id) {
-  const p = props[id];
-  document.getElementById('detail-breadcrumb').textContent = p.name;
-  document.getElementById('detail-img-placeholder').textContent = p.name.replace('Casa ', 'C');
-  document.getElementById('detail-name').textContent = p.name;
-  document.getElementById('detail-type').textContent = p.type;
-  document.getElementById('detail-loc').textContent = p.loc;
-  document.getElementById('detail-price').textContent = p.price !== '—' ? p.price : 'Preço a definir';
-  document.getElementById('detail-price-note').textContent = p.priceNote;
-  const fb = document.getElementById('detail-fase-badge');
-  fb.textContent = p.faseLabel;
-  fb.className = 'prop-fase fase-' + p.fase;
-  const st = document.getElementById('detail-specs-table');
-  st.innerHTML = p.specs.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join('');
-  const eq = document.getElementById('detail-eq-grid');
-  const eqCard = document.getElementById('detail-eq-card');
-  if (p.eq.length) {
-    eq.innerHTML = p.eq.map(e => `<div class="eq-chip">${e}</div>`).join('');
-    eqCard.style.display = 'block';
-  } else { eqCard.style.display = 'none'; }
-  const hlEl = document.getElementById('detail-highlights');
-  hlEl.innerHTML = p.highlights.map(h =>
-    `<div class="highlight-img">` + (h.src ? `<img src="${h.src}" alt="${h.label}">` : `<div class="ph">${h.label}</div>`) + `</div>`
-  ).join('');
-  const track = document.getElementById('carousel-track');
-  const dots  = document.getElementById('carousel-dots');
-  const carouselCard = document.getElementById('detail-carousel-card');
-  carouselCurrent = 0;
-  carouselTotal = p.gallery.length;
-  if (carouselTotal > 0) {
-    track.innerHTML = p.gallery.map(g =>
-      `<div class="carousel-slide">` + (g.src ? `<img src="${g.src}" alt="${g.caption}">` : `<div class="ph">${g.caption}</div>`) + `</div>`
-    ).join('');
-    dots.innerHTML = p.gallery.map((_, i) =>
-      `<button class="carousel-dot ${i===0?'active':''}" onclick="carouselGoTo(${i})"></button>`
-    ).join('');
-    track.style.transform = 'translateX(0)';
-    carouselCard.style.display = 'block';
-  } else { carouselCard.style.display = 'none'; }
-  const others = document.getElementById('other-props-list');
-  others.innerHTML = Object.entries(props).filter(([k]) => k !== id).map(([k, o]) =>
-    `<div class="mini-prop" onclick="showDetail('${k}')">
-      <div class="mini-thumb">${o.name.replace('Casa ','C')}</div>
+    function showDetail(id) {
+      const p = props[id];
+      document.getElementById('detail-breadcrumb').textContent = p.name;
+      document.getElementById('detail-img-placeholder').textContent = p.name.replace('Casa ', 'C');
+      document.getElementById('detail-name').textContent = p.name;
+      document.getElementById('detail-type').textContent = p.type;
+      document.getElementById('detail-loc').textContent = p.loc;
+      document.getElementById('detail-price').textContent = p.price !== '—' ? p.price : 'Preço a definir';
+      document.getElementById('detail-price-note').textContent = p.priceNote;
+      const fb = document.getElementById('detail-fase-badge');
+      fb.textContent = p.faseLabel;
+      fb.className = 'prop-fase fase-' + p.fase;
+      const st = document.getElementById('detail-specs-table');
+      st.innerHTML = p.specs.map(([l, v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join('');
+      const eq = document.getElementById('detail-eq-grid');
+      const eqCard = document.getElementById('detail-eq-card');
+      if (p.eq.length) {
+        eq.innerHTML = p.eq.map(e => `<div class="eq-chip">${e}</div>`).join('');
+        eqCard.style.display = 'block';
+      } else { eqCard.style.display = 'none'; }
+      const hlEl = document.getElementById('detail-highlights');
+      hlEl.innerHTML = p.highlights.map(h =>
+        `<div class="highlight-img">` + (h.src ? `<img src="${h.src}" alt="${h.label}">` : `<div class="ph">${h.label}</div>`) + `</div>`
+      ).join('');
+      const track = document.getElementById('carousel-track');
+      const dots = document.getElementById('carousel-dots');
+      const carouselCard = document.getElementById('detail-carousel-card');
+      carouselCurrent = 0;
+      carouselTotal = p.gallery.length;
+      if (carouselTotal > 0) {
+        track.innerHTML = p.gallery.map(g =>
+          `<div class="carousel-slide">` + (g.src ? `<img src="${g.src}" alt="${g.caption}">` : `<div class="ph">${g.caption}</div>`) + `</div>`
+        ).join('');
+        dots.innerHTML = p.gallery.map((_, i) =>
+          `<button class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="carouselGoTo(${i})"></button>`
+        ).join('');
+        track.style.transform = 'translateX(0)';
+        carouselCard.style.display = 'block';
+      } else { carouselCard.style.display = 'none'; }
+      const others = document.getElementById('other-props-list');
+      others.innerHTML = Object.entries(props).filter(([k]) => k !== id).map(([k, o]) =>
+        `<div class="mini-prop" onclick="showDetail('${k}')">
+      <div class="mini-thumb">${o.name.replace('Casa ', 'C')}</div>
       <div><span class="mini-name">${o.name}</span><span class="mini-type">${o.type} · ${o.loc}</span></div>
     </div>`
-  ).join('');
-  document.getElementById('cf-property').value = p.name;
-  document.getElementById('cf-name').value = '';
-  document.getElementById('cf-tel').value = '';
-  document.getElementById('cf-email').value = '';
-  document.getElementById('list-view').style.display = 'none';
-  document.getElementById('detail-view').style.display = 'block';
-  window.scrollTo(0, 0);
-}
+      ).join('');
+      document.getElementById('cf-property').value = p.name;
+      document.getElementById('cf-name').value = '';
+      document.getElementById('cf-tel').value = '';
+      document.getElementById('cf-email').value = '';
+      document.getElementById('list-view').style.display = 'none';
+      document.getElementById('detail-view').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
 
-function showList() {
-  document.getElementById('detail-view').style.display = 'none';
-  document.getElementById('list-view').style.display = 'block';
-  window.scrollTo(0, 0);
-}
+    function showList() {
+      document.getElementById('detail-view').style.display = 'none';
+      document.getElementById('list-view').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
 
-// Filtro por distrito
-function filterProps(distrito, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.prop-row').forEach(row => {
-    row.style.display = (distrito === 'todos' || row.dataset.distrito === distrito) ? 'grid' : 'none';
-  });
-}
+    // Filtro por distrito
+    function filterProps(distrito, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.prop-row').forEach(row => {
+        row.style.display = (distrito === 'todos' || row.dataset.distrito === distrito) ? 'grid' : 'none';
+      });
+    }
 
-let carouselCurrent = 0;
-let carouselTotal = 0;
-function carouselGoTo(i) {
-  carouselCurrent = i;
-  document.getElementById('carousel-track').style.transform = `translateX(-${i * 100}%)`;
-  document.querySelectorAll('.carousel-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
-}
-function carouselMove(dir) {
-  carouselGoTo((carouselCurrent + dir + carouselTotal) % carouselTotal);
-}
+    let carouselCurrent = 0;
+    let carouselTotal = 0;
+    function carouselGoTo(i) {
+      carouselCurrent = i;
+      document.getElementById('carousel-track').style.transform = `translateX(-${i * 100}%)`;
+      document.querySelectorAll('.carousel-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+    }
+    function carouselMove(dir) {
+      carouselGoTo((carouselCurrent + dir + carouselTotal) % carouselTotal);
+    }
 
-const urlId = new URLSearchParams(window.location.search).get('id');
-if (urlId && props[urlId]) showDetail(urlId);
+    const urlId = new URLSearchParams(window.location.search).get('id');
+    if (urlId && props[urlId]) showDetail(urlId);
 
-window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });
-  }, 500);
-});
-</script>
-<nav class="mobile-nav">
-  <div class="mobile-nav-inner">
-    <a href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-      Início
-    </a>
-    <a href="properties.html" class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-      Casas
-    </a>
-    <a href="sell.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      Vender
-    </a>
-    <a href="about.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-      Empresa
-    </a>
-  </div>
-</nav>
+    window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        formspree('initForm', { formElement: '#visit-form', formId: 'xnjryyvk' });
+      }, 500);
+    });
+  </script>
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        </svg>
+        Início
+      </a>
+      <a href="properties.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        Casas
+      </a>
+      <a href="sell.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Vender
+      </a>
+      <a href="about.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        Empresa
+      </a>
+    </div>
+  </nav>
+  <script>
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('open');
+      document.querySelector('.sidebar-overlay').classList.toggle('active');
+      document.body.style.overflow = document.querySelector('.sidebar').classList.contains('open') ? 'hidden' : '';
+    }
+    function closeSidebar() {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.querySelector('.sidebar-overlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+  </script>
 </body>
+
 </html>
